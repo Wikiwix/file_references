@@ -18,6 +18,8 @@ void main(List<String> arguments) {
   }).expand((i) => i);
   final dotFile = '''
 digraph FileReferences {
+  # Left to right will help with the long labels
+  rankdir="LR";
   # nodes
 ${files.map((file) => file.path.quoted).join('\n').indented(2)}
 
