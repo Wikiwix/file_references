@@ -4,11 +4,13 @@ import 'package:path/path.dart' as p;
 
 /// "Config"
 const String path = '.';
-hasReference(String text) => (File referenceCandidate) => text.contains(
-      RegExp(
-        r'''[\n/'" ]''' + RegExp.escape(p.basename(referenceCandidate.path)),
-      ),
-    );
+hasReference(File file) =>
+    (File referenceCandidate) => file.readAsStringSync().contains(
+          RegExp(
+            r'''[\n/'" ]''' +
+                RegExp.escape(p.basename(referenceCandidate.path)),
+          ),
+        );
 
 /// Config end
 
@@ -16,8 +18,7 @@ void main(List<String> arguments) {
   final directory = Directory(path);
   final files = directory.listSync(recursive: true).whereType<File>();
   final edges = files.map((file) {
-    final fileContents = file.readAsStringSync();
-    final fileHasReferenceTo = hasReference(fileContents);
+    final fileHasReferenceTo = hasReference(file);
     return files
         .map(
           (otherFile) =>
