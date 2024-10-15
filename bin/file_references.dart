@@ -2,17 +2,26 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
+/// "Config"
+const String path = '.';
+hasReference(String text) => (File referenceCandidate) => text.contains(
+      RegExp(
+        r'''[\n/'" ]''' + RegExp.escape(p.basename(referenceCandidate.path)),
+      ),
+    );
+
+/// Config end
+
 void main(List<String> arguments) {
-  const path = '.';
   final directory = Directory(path);
   final files = directory.listSync(recursive: true).whereType<File>();
   final edges = files.map((file) {
     final fileContents = file.readAsStringSync();
+    final fileHasReferenceTo = hasReference(fileContents);
     return files
         .map(
-          (otherFile) => fileContents.contains(p.basename(otherFile.path))
-              ? (file, otherFile)
-              : null,
+          (otherFile) =>
+              fileHasReferenceTo(otherFile) ? (file, otherFile) : null,
         )
         .whereType<(File, File)>();
   }).expand((i) => i);
