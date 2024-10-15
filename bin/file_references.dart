@@ -21,7 +21,7 @@ digraph FileReferences {
   # Left to right will help with the long labels
   rankdir="LR";
   # nodes
-${files.map((file) => file.path.quoted).join('\n').indented(2)}
+${files.map((file) => file.path.asDotId).join('\n').indented(2)}
 
   # edges
 ${edges.map(formatDotEdge).join('\n').indented(2)}
@@ -31,10 +31,12 @@ ${edges.map(formatDotEdge).join('\n').indented(2)}
 }
 
 String formatDotEdge((File, File) edge) =>
-    '${edge.$1.path.quoted} -> ${edge.$2.path.quoted}';
+    '${edge.$1.path.asDotId} -> ${edge.$2.path.asDotId}';
 
 extension StringStuff on String {
-  String get quoted => '"$this"';
+  /// Make a string a valid DOT file [ID](https://graphviz.org/doc/info/lang.html#ids)
+  String get asDotId => '"${replaceAll('"', '\\"')}"';
+
   String indented(final int indentation) =>
       split('\n').map((line) => repeatString(indentation) + line).join('\n');
 }
