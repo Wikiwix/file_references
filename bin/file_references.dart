@@ -6,26 +6,27 @@ import 'package:path/path.dart' as p;
 const String path = '.';
 hasReference(File file) =>
     (File referenceCandidate) => file.readAsStringSync().contains(
-          RegExp(
-            r'''[\n/'" ]''' +
-                RegExp.escape(p.basename(referenceCandidate.path)),
-          ),
-        );
+      RegExp(
+        r'''[\n/'" ]''' + RegExp.escape(p.basename(referenceCandidate.path)),
+      ),
+    );
 
 /// Config end
 
 void main(List<String> arguments) {
   final directory = Directory(path);
   final files = directory.listSync(recursive: true).whereType<File>();
-  final edges = files.map((file) {
-    final fileHasReferenceTo = hasReference(file);
-    return files
-        .map(
-          (otherFile) =>
-              fileHasReferenceTo(otherFile) ? (file, otherFile) : null,
-        )
-        .whereType<(File, File)>();
-  }).expand((i) => i);
+  final edges = files
+      .map((file) {
+        final fileHasReferenceTo = hasReference(file);
+        return files
+            .map(
+              (otherFile) =>
+                  fileHasReferenceTo(otherFile) ? (file, otherFile) : null,
+            )
+            .whereType<(File, File)>();
+      })
+      .expand((i) => i);
   final dotFile = '''
 digraph FileReferences {
   # Left to right will help with the long labels
