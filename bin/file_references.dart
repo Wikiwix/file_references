@@ -5,11 +5,16 @@ import 'package:path/path.dart' as p;
 /// "Config"
 const String path = '.';
 hasReference(File file) =>
-    (File referenceCandidate) => file.readAsStringSync().contains(
-      RegExp(
-        r'''[\n/'" ]''' + RegExp.escape(p.basename(referenceCandidate.path)),
-      ),
-    );
+    (File referenceCandidate) =>
+        tryOrNull(
+          () => file.readAsStringSync().contains(
+            RegExp(
+              r'''[\n/'" ]''' +
+                  RegExp.escape(p.basename(referenceCandidate.path)),
+            ),
+          ),
+        ) ??
+        false;
 
 /// Config end
 
@@ -54,3 +59,11 @@ extension StringStuff on String {
 
 String repeatString(int indentation, [String toRepeat = ' ']) =>
     Iterable.generate(indentation, (_) => toRepeat).join();
+
+R? tryOrNull<R, E extends Object>(R Function() action) {
+  try {
+    return action();
+  } on E {
+    return null;
+  }
+}
