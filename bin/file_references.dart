@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 /// "Config"
-const String path = '.';
 hasReference(File file) =>
     (File referenceCandidate) =>
         tryOrNull(
@@ -19,6 +18,7 @@ hasReference(File file) =>
 /// Config end
 
 void main(List<String> arguments) {
+  final String path = arguments.firstOrNull ?? '.';
   final directory = Directory(path);
   final files = directory.listSync(recursive: true).whereType<File>();
   final edges = files
